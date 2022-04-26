@@ -1,26 +1,50 @@
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, useRef } from "react";
 import { Metaverse } from "../../lib/enums";
-import { getValuationDailyData } from "../../lib/FirebaseUtilities";
-import { IChartValues, symbolPredictions } from "../../lib/types";
-import {doomies} from './floorPrice'
+
+import {test} from './data';
+
 const AreaChart = dynamic(() => import("./AreaChart"), {
   ssr: false,
 });
 
 const ChartWrapper = ({ metaverse }: { metaverse: Metaverse }) => {
-  const [values, setValues] = useState<IChartValues[]>([]);
+  const [values, setValues] = useState<any>({});
+  const routes = [{route:"avgPriceParcel",label:"Average Price per Parcel"},{route:"floorPrice",label:"floor Price"}]
   useEffect(() => {
-    (async () =>
-      setValues(
-        (await getValuationDailyData(metaverse)).map((value:any) => {
-          return { time: value.time, data: value.dailyVolume };
-        })
-      ))();
+    console.log("inciando")
+    const salesVolumeCall = async () =>
+      {
+        const routesValues:any = {}
+        console.log("foreach");
+        for (let element in routes){
+          routesValues[routes[element]["route"]] = await test(metaverse,routes[element]["route"]) 
+          console.log(routesValues)
+        }
+        // routes.map(async element => { 
+        //     routesValues[element] = await test(metaverse,element) 
+        //     console.log(routesValues)
+        // });
+        console.log(routesValues,"routes")
+        setValues(routesValues)
+      }
+    console.log("terminado")
+    salesVolumeCall();
   }, [metaverse]);
   return (
     <>
-      <AreaChart
+    {routes.map( element=> {
+      if(values[element["route"]])
+
+      return (
+        <AreaChart
+        metaverse={metaverse}
+        data={values[element["route"]]}
+        label= {element["label"]}
+        />
+      )
+    })}
+      {/* <AreaChart
         metaverse={metaverse}
         data={values}
         symbolOptions={{
@@ -39,7 +63,7 @@ const ChartWrapper = ({ metaverse }: { metaverse: Metaverse }) => {
         metaverse={metaverse}
         data={doomies as IChartValues[]}
         label="Floor Price"
-      />
+      /> */}
     </>
   );
 };
