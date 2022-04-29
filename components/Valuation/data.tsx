@@ -12,7 +12,7 @@ export const test = async(metaverse: Metaverse,route:string) : Promise<Info[]>=>
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({metaverse:"sandbox"}),
+        body: JSON.stringify({metaverse:"sandbox"}), //metaverse
         })
         
     const data = await response.json()
