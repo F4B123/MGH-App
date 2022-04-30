@@ -39,7 +39,7 @@ const AreaChart = ({
       timeScale: {
         fixLeftEdge: true,
         fixRightEdge: true,
-        timeVisible: true,
+        timeVisible: false,
       },
       rightPriceScale: {
         scaleMargins: {
@@ -72,7 +72,7 @@ const AreaChart = ({
 areaSeries.setData(
       data.map((currentData) => {
         return {
-          time: (parseInt(currentData.time) ) as UTCTimestamp,   ///maybe theres a problem here
+          time: (parseInt(currentData.time) ) as UTCTimestamp,   ///maybe there's a problem here
           value: symbolOptions && typeof data == 'object'
             ? (currentData.data as Record<symbolPredictions,number>)[symbolOptions[symbol].key as symbolPredictions] 
             : currentData.data,

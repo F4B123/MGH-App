@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import React, { useEffect, useState, useRef } from "react";
 import { Metaverse } from "../../lib/enums";
+import { IChartValues } from "../../lib/types";
 
 import {test} from './data';
 
@@ -8,9 +9,23 @@ const AreaChart = dynamic(() => import("./AreaChart"), {
   ssr: false,
 });
 
+///////////
+const Chart = dynamic(() => import("./Chart"),{
+  ssr: false,
+})
+
+let markCap:number|any
+/////////////
+
 const ChartWrapper = ({ metaverse }: { metaverse: Metaverse }) => {
   const [values, setValues] = useState<any>({});
-  const routes = [{route:"avgPriceParcel",label:"Average Price per Parcel"},{route:"floorPrice",label:"floor Price"}]
+  const routes = [{route:"avgPriceParcel",label:"Average Price per Parcel"},{route:"floorPrice",label:"Floor Price"},
+  {route:"avgPriceParcelPerArea",label:"Average Price per Area"},{route:"individualOwners",label:"Indivual Owners"},
+  {route:"maxPrice",label:"Max Price"},{route:"totalNumberOfSales",label:"Total Sales"},
+  {route:"stdSalesPrices",label:"std Sales Prices"},{route:"salesVolume",label:"Sales Volume"}]
+  //////////
+  const routesA = [{route:"richList",label:"Rich List"},{route:"mCap",label:"Market Cap"}]
+  ///////////
   useEffect(() => {
     console.log("inciando")
     const salesVolumeCall = async () =>
@@ -21,12 +36,11 @@ const ChartWrapper = ({ metaverse }: { metaverse: Metaverse }) => {
           routesValues[routes[element]["route"]] = await test(metaverse,routes[element]["route"]) 
           console.log(routesValues)
         }
-        // routes.map(async element => { 
-        //     routesValues[element] = await test(metaverse,element) 
-        //     console.log(routesValues)
-        // });
         console.log(routesValues,"routes")
         setValues(routesValues)
+        //////
+        markCap = await test(metaverse,"mCap")
+        console.log("markcap",markCap)
       }
     console.log("terminado")
     salesVolumeCall();
@@ -44,26 +58,12 @@ const ChartWrapper = ({ metaverse }: { metaverse: Metaverse }) => {
         />
       )
     })}
-      {/* <AreaChart
-        metaverse={metaverse}
-        data={values}
-        symbolOptions={{
-          ETH: { key: "ethPrediction" },
-          USDC: { key: "usdPrediction" },
-          METAVERSE: {
-            key: "metaversePrediction",
-            sandbox: "SAND",
-            decentraland: "MANA",
-            "axie-infinity": "AXS",
-          },
-        }}
-        label="Daily Volume"
-      />
-      <AreaChart
-        metaverse={metaverse}
-        data={doomies as IChartValues[]}
-        label="Floor Price"
-      /> */}
+
+    <Chart
+    metaverse={metaverse}
+    data={ markCap}
+    label= {"Market Cap"}
+    />
     </>
   );
 };
